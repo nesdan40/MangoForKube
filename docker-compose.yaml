@@ -1,0 +1,126 @@
+#Finalize
+
+secrets:
+  nugetconfig:
+    file: ${NUGET_CONFIG_PATH}
+networks:
+  mango-network:
+    driver: bridge
+
+services:
+  mango-auth:
+    build:
+      context: ./Mango.Services.AuthAPI
+      dockerfile: Dockerfile
+      secrets:
+        - nugetconfig
+    image: ${DOCKER_REGISTRY-}mangoauthapi
+    container_name: mango-auth
+
+    env_file:
+      - ./Mango.Services.AuthAPI/.env
+    ports:
+      - "5005:8080"
+    networks:
+      - mango-network
+
+  mango-product:
+    build:
+      context: ./Mango.Services.ProductAPI
+      dockerfile: Dockerfile
+    image: ${DOCKER_REGISTRY-}mangoproductapi
+    container_name: mango-product
+
+    env_file:
+      - ./Mango.Services.ProductAPI/.env
+    ports:
+      - "5156:8080"
+    networks:
+      - mango-network
+
+  mango-coupon:
+    image: ${DOCKER_REGISTRY-}mangocouponapi
+    container_name: mango-coupon
+    build:
+      context: ./Mango.Services.CouponAPI
+      dockerfile: Dockerfile
+    env_file:
+      - ./Mango.Services.CouponAPI/.env
+    ports:
+      - "5104:8080"
+      - "7001:8081"
+    networks:
+      - mango-network  
+        
+  mango-reward:
+    image: ${DOCKER_REGISTRY-}mangorewardapi
+    container_name: mango-reward
+    build:
+      context: ./Mango.Services.RewardAPI
+      dockerfile: Dockerfile
+    env_file:
+      - ./Mango.Services.RewardAPI/.env
+    ports:
+      - "5202:8080"
+      - "7009:8081"
+    networks:
+      - mango-network
+
+  mango-order:
+    image: ${DOCKER_REGISTRY-}mangoorderapi
+    container_name: mango-order
+    build:
+      context: ./Mango.Services.OrderAPI
+      dockerfile: Dockerfile
+      secrets:
+        - nugetconfig
+    env_file:
+      - ./Mango.Services.OrderAPI/.env
+    ports:
+      - "5201:8080"
+      - "7004:8081"
+    networks:
+      - mango-network
+
+  mango-email:
+    image: ${DOCKER_REGISTRY-}mangoemailapi
+    build:
+      context: ./Mango.Services.EmailAPI
+      dockerfile: Dockerfile
+      secrets:
+        - nugetconfig
+    container_name: mango-email
+    env_file:
+      - ./Mango.Services.EmailAPI/.env
+    ports:
+      - "5216:8080"
+    networks:
+      - mango-network
+
+  mango-shoppingcart:
+    image: ${DOCKER_REGISTRY-}mangoshoppingcartapi
+    build:
+      context: ./Mango.Services.ShoppingCartAPI
+      dockerfile: Dockerfile
+      secrets:
+        - nugetconfig
+    container_name: mango-shoppingcart
+    env_file:
+      - ./Mango.Services.ShoppingCartAPI/.env
+    ports:
+      - "5220:8080"
+    networks:
+      - mango-network
+  
+  mango-web:
+    image: ${DOCKER_REGISTRY-}mangoweb
+    build:
+      context: ./Mango.Web
+      dockerfile: Dockerfile
+    container_name: mango-web
+    env_file:
+      - ./Mango.Web/.env
+    ports:
+      - "5048:8080"
+    networks:
+      - mango-network

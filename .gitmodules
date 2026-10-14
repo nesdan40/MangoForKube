@@ -1,0 +1,24 @@
+[submodule "Mango.Services.AuthAPI"]
+	path = Mango.Services.AuthAPI
+	url = https://github.com/MdKasimS-CCG/Mango.Services.AuthAPI.git
+[submodule "Mango.Services.CouponAPI"]
+	path = Mango.Services.CouponAPI
+	url = https://github.com/MdKasimS-CCG/Mango.Services.CouponAPI.git
+[submodule "Mango.Services.EmailAPI"]
+	path = Mango.Services.EmailAPI
+	url = https://github.com/MdKasimS-CCG/Mango.Services.EmailAPI.git
+[submodule "Mango.Services.OrderAPI"]
+	path = Mango.Services.OrderAPI
+	url = https://github.com/MdKasimS-CCG/Mango.Services.OrderAPI.git
+[submodule "Mango.Services.ProductAPI"]
+	path = Mango.Services.ProductAPI
+	url = https://github.com/MdKasimS-CCG/Mango.Services.ProductAPI.git
+[submodule "Mango.Services.RewardAPI"]
+	path = Mango.Services.RewardAPI
+	url = https://github.com/MdKasimS-CCG/Mango.Services.RewardAPI.git
+[submodule "Mango.Services.ShoppingcartAPI"]
+	path = Mango.Services.ShoppingcartAPI
+	url = https://github.com/MdKasimS-CCG/Mango.Services.ShoppingcartAPI.git
+[submodule "Mango.Web"]
+	path = Mango.Web
+	url = https://github.com/MdKasimS-CCG/Mango.Web.git
