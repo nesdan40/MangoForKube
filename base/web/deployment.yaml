@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mango-web
+  namespace: mango
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mango-web
+  template:
+    metadata:
+      labels:
+        app: mango-web
+    spec:
+      containers:
+        - name: mango-web
+          image: mangoweb:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+
+          envFrom:
+            - configMapRef:
+                name: mango-common-config
+
+          env:
+            - name: Docker__ServiceUrls__AuthAPI
+              value: http://mango-auth:8080
+
+            - name: Docker__ServiceUrls__ProductAPI
+              value: http://mango-product:8080
+
+            - name: Docker__ServiceUrls__ShoppingCartAPI
+              value: http://mango-shoppingcart:8080
+
+            - name: Docker__ServiceUrls__CouponAPI
+              value: http://mango-coupon:8080
+
+            - name: Docker__ServiceUrls__OrderAPI
+              value: http://mango-order:8080

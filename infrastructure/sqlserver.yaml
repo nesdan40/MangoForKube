@@ -1,0 +1,72 @@
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mango-sqlserver-pvc
+  namespace: mango
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mango-sqlserver
+  namespace: mango
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mango-sqlserver
+  template:
+    metadata:
+      labels:
+        app: mango-sqlserver
+    spec:
+      containers:
+        - name: sqlserver
+          image: mcr.microsoft.com/mssql/server:2022-latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 1433
+          env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: MSSQL_PID
+              value: Developer
+            - name: MSSQL_SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mango-infrastructure-secrets
+                  key: MSSQL_SA_PASSWORD
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: "2"
+              memory: 2Gi
+          volumeMounts:
+            - name: sqlserver-data
+              mountPath: /var/opt/mssql
+      volumes:
+        - name: sqlserver-data
+          persistentVolumeClaim:
+            claimName: mango-sqlserver-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mango-sqlserver
+  namespace: mango
+spec:
+  type: ClusterIP
+  selector:
+    app: mango-sqlserver
+  ports:
+    - name: sqlserver
+      port: 1433
+      targetPort: 1433

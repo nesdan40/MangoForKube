@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mango-order
+  namespace: mango
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mango-order
+  template:
+    metadata:
+      labels:
+        app: mango-order
+    spec:
+      containers:
+        - name: mango-order
+          image: mangoorderapi:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+          
+          envFrom:
+            - configMapRef:
+                name: mango-common-config
+                
+          env:              
+            - name: Docker__ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  name: mango-secrets
+                  key: Order__ConnectionStrings__DefaultConnection
+
+            - name: Docker__ServiceUrls__ProductAPI
+              value: http://mango-product:8080

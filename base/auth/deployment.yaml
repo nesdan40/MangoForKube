@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mango-auth
+  namespace: mango
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mango-auth
+  template:
+    metadata:
+      labels:
+        app: mango-auth
+    spec:
+      containers:
+        - name: mango-auth
+          image: mangoauthapi:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+
+          envFrom:
+            - configMapRef: 
+                name: mango-common-config
+                
+          env:
+            - name: Docker__ApiSettings__Secret
+              valueFrom:
+                secretKeyRef:
+                  name: mango-secrets
+                  key: Auth__ApiSettings__Secret  
+                  
+            - name: Docker__ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  name: mango-secrets
+                  key: Auth__ConnectionStrings__DefaultConnection
+
+            - name: Docker__MessageQueue__RabbitMQ__HostName
+              value: mango-rabbitmq
+
+            - name: Docker__MessageQueue__RabbitMQ__Port
+              value: "5672"
+
+            - name: Docker__MessageQueue__RabbitMQ__UserName
+              valueFrom:
+                secretKeyRef:
+                  name: mango-infrastructure-secrets
+                  key: RABBITMQ_DEFAULT_USER
+
+            - name: Docker__MessageQueue__RabbitMQ__Password
+              valueFrom:
+                secretKeyRef:
+                  name: mango-infrastructure-secrets
+                  key: RABBITMQ_DEFAULT_PASS
+
+            - name: Docker__MessageQueue__RabbitMQ__VirtualHost
+              value: "/"

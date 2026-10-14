@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mango-shoppingcart
+  namespace: mango
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mango-shoppingcart
+  template:
+    metadata:
+      labels:
+        app: mango-shoppingcart
+    spec:
+      containers:
+        - name: mango-shoppingcart
+          image: mangoshoppingapi:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+
+          envFrom:
+            - configMapRef:
+                name: mango-common-config
+                
+          env:
+            - name: MessageQueue__RabbitMQ__HostName
+              value: mango-rabbitmq
+
+            - name: MessageQueue__RabbitMQ__Port
+              value: "5672"
+
+            - name: MessageQueue__RabbitMQ__UserName
+              valueFrom:
+                secretKeyRef:
+                  name: mango-infrastructure-secrets
+                  key: RABBITMQ_DEFAULT_USER
+
+            - name: MessageQueue__RabbitMQ__Password
+              valueFrom:
+                secretKeyRef:
+                  name: mango-infrastructure-secrets
+                  key: RABBITMQ_DEFAULT_PASS
+
+            - name: MessageQueue__RabbitMQ__VirtualHost
+              value: "/"
+
+            - name: ApiSettings__Secret
+              valueFrom:
+                secretKeyRef:
+                  name: mango-secrets
+                  key: ShoppingCart__ApiSettings__Secret
+
+            - name: Docker__ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  name: mango-secrets
+                  key: ShoppingCart__ConnectionStrings__DefaultConnection
+
+            - name: Docker__ServiceUrls__ProductAPI
+              value: http://mango-product:8080
+
+            - name: Docker__ServiceUrls__CouponAPI
+              value: http://mango-coupon:8080
+
+            - name: TopicAndQueueNames__EmailShoppingCartQueue
+              value: emailshoppingcart

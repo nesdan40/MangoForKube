@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mango-email
+  namespace: mango
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mango-email
+  template:
+    metadata:
+      labels:
+        app: mango-email
+    spec:
+      containers:
+        - name: mango-email
+          image: mangoemailapi:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+
+          envFrom:
+            - configMapRef:
+                name: mango-common-config
+                
+          env:
+            - name: MessageQueue__Provider
+              value: RabbitMQ
+
+            - name: Docker__ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  name: mango-secrets
+                  key: Email__ConnectionStrings__DefaultConnection
+
+            - name: Docker__MessageQueue__RabbitMQ__ConnectionString
+              valueFrom:
+                secretKeyRef:
+                  name: mango-secrets
+                  key: Email__MessageQueue__RabbitMQ__ConnectionString
+
+            - name: TopicAndQueueNames__EmailShoppingCartQueue
+              value: emailshoppingcart
+
+            - name: TopicAndQueueNames__RegisterUserQueue
+              value: emailregisteruser

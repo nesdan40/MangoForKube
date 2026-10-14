@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mango-coupon
+  namespace: mango
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mango-coupon
+  template:
+    metadata:
+      labels:
+        app: mango-coupon
+    spec:
+      containers:
+        - name: mango-coupon
+          image: mangocouponapi:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+
+          envFrom:
+            - configMapRef:
+                name: mango-common-config
+                
+          env:
+            - name: ApiSettings__Secret
+              valueFrom:
+                secretKeyRef:
+                  name: mango-secrets
+                  key: Coupon__ApiSettings__Secret
+
+            - name: Docker__ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  name: mango-secrets
+                  key: Coupon__ConnectionStrings__DefaultConnection

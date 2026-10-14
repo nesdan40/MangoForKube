@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mango-product
+  namespace: mango
+spec:
+  type: ClusterIP
+  selector:
+    app: mango-product
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mango-reward
+  namespace: mango
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mango-reward
+  template:
+    metadata:
+      labels:
+        app: mango-reward
+    spec:
+      containers:
+        - name: mango-reward
+          image: mangorewardapi:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+
+          envFrom:
+            - configMapRef:
+                name: mango-common-config
+                
+          env:
+            - name: Docker__ConnectionStrings__DefaultConnection
+              valueFrom:
+                secretKeyRef:
+                  name: mango-secrets
+                  key: Reward__ConnectionStrings__DefaultConnection
